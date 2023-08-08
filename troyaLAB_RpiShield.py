@@ -2,7 +2,6 @@ import RPi.GPIO as GPIO  # Import Raspberry Pi GPIO library
 import troyalab.RPi_Shield
 from time import sleep     # Import the sleep function from the time module
 
-
 print("Started")
 troyalab = troyalab.RPi_Shield.BG96("/dev/ttyS0")
 troyalab.setupGPIO()
@@ -26,7 +25,7 @@ sleep(0.5)
 """
 
 troyalab.connectToOperator()
-sleep(0.5)
+sleep(2)
 troyalab.getSignalQuality()
 sleep(0.5)
 troyalab.getQueryNetworkInfo()
@@ -43,17 +42,29 @@ troyalab.activateContext()
 sleep(0.5)
 
 troyalab.getAPN_IPaddress()
-sleep(0.5)
+sleep(1)
 
 
 troyalab.ConnectMQTTServer("194.31.59.188","1883")
-sleep(0.5)
+
+sleep(4)  # Sleep for 1 second
 
 troyalab.MQTTDeviceConf("deneme","deneme","deneme")
-sleep(0.5)
+sleep(4)  # Sleep for 1 second
 
-troyalab.sendDataMQTT("v1/devices/me/telemetry/","{\"fatih\":6.34,\"furkan\":51.51}")
-sleep(0.5)
+
+
+#troyalab.data_send_deneme("AT+QMTPUB=0,0,0,0,\"v1/devices/me/telemetry\"\r\n")
+troyalab.sendDataMQTT("v1/devices/me/telemetry","{\"fatih\":34.34,\"furkan\":5.45}")
+sleep(4)  # Sleep for 1 second
+
+
+#troyalab.data_send_deneme("{\"fatih\":3.96,\"furkan\":65.11}\r\n")
+sleep(2)  # Sleep for 1 second
+
+#troyalab.sendCTRL_Z()
+sleep(1)  # Sleep for 1 second
+
 
 while True:
 

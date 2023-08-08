@@ -152,7 +152,10 @@ class BG96:
         while self.getModemStatus():
             pass
         print("BG96 module powered up!")
+        time.sleep(0.2)
         GPIO.output(self.BG96_POWERKEY, 0)
+        time.sleep(2)
+
 
     """
     # Date   : 06/08/2023
@@ -661,7 +664,7 @@ class BG96:
         self.compose += "\"" + MQTT_PASSWORD + "\""
         self.sendATComm(self.compose, "+QMTCONN")
 
-    def sendDataMQTT(self, MQTT_TOPIC = "v1/devices/me/telemetry\\" ,JSON_DATA="{\"fatih\":6.34,\"furkan\":51.51}"):
+    def sendDataMQTT(self, MQTT_TOPIC = "v1/devices/me/telemetry" ,JSON_DATA="{\"fatih\":6.34,\"furkan\":51.51}"):
         if MQTT_TOPIC is None:
             MQTT_TOPIC = self.MQTT_TOPIC
         if JSON_DATA is None:
@@ -671,11 +674,25 @@ class BG96:
         self.sendATComm(self.compose, ">" ,10)
 
         self.compose = JSON_DATA
-        self.sendATComm(self.compose,"")
+        self.sendATComm(self.compose,"{")
         command_variable = chr(26)
         ser.write(command_variable.encode('utf-8'))
         self.getResponse("OK")
+    def sendCTRL_Z(self):
+        command_variable = chr(26)
+        ser.write(command_variable.encode('utf-8'))
 
+    def data_send_deneme(self, command):
+        if (ser.isOpen() == False):
+            ser.open()
+        compose = ""
+        # compose = str(command) + "\r\n"
+        ser.reset_input_buffer()
+        ser.write(command.encode())
+        time.sleep(5)
+        response = ser.read_all().decode()
+        time.sleep(1)
+        print(response)
 
     def sendDataMQTT_all(self, server, token, data): # TODO bu fonksiyon daha sonra duzeltilecek
         self.compose = "AT+QHTTPCFG=\"contextid\",1"

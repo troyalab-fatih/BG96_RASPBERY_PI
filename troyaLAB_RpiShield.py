@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO  # Import Raspberry Pi GPIO library
 import troyalab.RPi_Shield
 from time import sleep     # Import the sleep function from the time module
+import datetime
+import json
 
 print("Started")
 troyalab = troyalab.RPi_Shield.BG96("/dev/ttyS0")
@@ -44,31 +46,24 @@ sleep(0.5)
 troyalab.getAPN_IPaddress()
 sleep(1)
 
-
-troyalab.ConnectMQTTServer("194.31.59.188","1883")
-
-sleep(4)  # Sleep for 1 second
-
-troyalab.MQTTDeviceConf("deneme","deneme","deneme")
-sleep(4)  # Sleep for 1 second
-
-
-
-#troyalab.data_send_deneme("AT+QMTPUB=0,0,0,0,\"v1/devices/me/telemetry\"\r\n")
-troyalab.sendDataMQTT("v1/devices/me/telemetry","{\"fatih\":34.34,\"furkan\":5.45}")
-sleep(4)  # Sleep for 1 second
-
-
-#troyalab.data_send_deneme("{\"fatih\":3.96,\"furkan\":65.11}\r\n")
-sleep(2)  # Sleep for 1 second
-
-#troyalab.sendCTRL_Z()
+"""
+troyalab.ConnectMQTTServer("3.144.39.189","1883")
 sleep(1)  # Sleep for 1 second
+troyalab.MQTTDeviceConf("raspi","raspi","raspi")
+sleep(1)  # Sleep for 1 second
+"""
 
+troyalab.ThingboardMQTTBasicConfig("3.144.39.189","1883","raspi","raspi","raspi")
 
 while True:
+    sleep(8)
+    troyalab.publishDataMQTT("v1/devices/me/telemetry", "{\"fatih\":6,\"furkan\":34}")
+    sleep(8)
+    troyalab.publishDataMQTT("v1/devices/me/telemetry", "{\"fatih\":34.51,\"furkan\":6.34}")
+    sleep(8)
 
-
-    #troyalab.sendATComm("AT+QCFG=\"band\"","OK\r\n")
-    #answer = troyalab.AT_komut_gonder("AT+CPIN?", True)
-    sleep(1)
+    sensor_data = {'temperature': 0, 'humdity': 0, 'dtime': 0}
+    sensor_data['temperature'] = 21
+    sensor_data['humdity'] = 22
+    sensor_data['dtime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    troyalab.publishDataMQTT('v1/devices/me/telemetry', json.dumps(sensor_data))

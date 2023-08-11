@@ -3,19 +3,12 @@ import time
 try:
     import serial
 except Exception as e:
-    print("serial Library not found.")
+    print("serial Library not found. Pls pip3 install serial")
 
 try:
     import RPi.GPIO as GPIO
 except Exception as e:
-    print("GPIO Library not found.")
-
-try:
-    GPIO.setwarnings(False)  # Ignore warning for now
-    GPIO.setmode(GPIO.BCM)  # Use physical pin numbering
-    GPIO.setup(4, GPIO.OUT, initial=GPIO.LOW)  # Set pin 8 to be an output pin and set initial value to low (off)+
-except Exception as e:
-    print("Error RPi.GPIO")
+    print("RPi.GPIO Library not found.")
 
 try:
     from decimal import *
@@ -27,15 +20,14 @@ ser = serial.Serial()
 def millis():
     return int(time.time())
 
-
 #===========================================================================================================#
 class BG96:
 
-    board          = ""  # shield name (BG96-RPi Shield)
-    MQTT_BROKER_IP = ""  # MQTT IP Address
+    board          = ""    # shield name (BG96-RPi Shield)
+    MQTT_BROKER_IP = ""    # MQTT IP Address
     MQTT_PORT      = 1883  # MQTT Port number #default 1883
-    MQTT_CLIENT_ID = ""  # FOR MQTT
-    MQTT_USER_NAME = ""  # port number
+    MQTT_CLIENT_ID = ""    # FOR MQTT
+    MQTT_USER_NAME = ""    # port number
     MQTT_PASSWORD  = ""
     MQTT_TOPIC     = ""
     JSON_DATA      = "{\"fatih\":6.34,\"furkan\":51.51}"
@@ -43,6 +35,14 @@ class BG96:
 
     ip_address    = ""  # ip address for TCP or UDP
     port_number   = ""  # port number for TCP or UDP
+
+    TB_MQTT_BROKER_IP = ""    # MQTT IP Address
+    TB_MQTT_PORT      = 1883  # MQTT Port number #default 1883
+    TB_MQTT_CLIENT_ID = ""    # FOR MQTT
+    TB_MQTT_USER_NAME = ""    # port number
+    TB_MQTT_PASSWORD  = ""
+    TB_MQTT_TOPIC     = ""
+    TB_JSON_DATA      = "{\"fatih\":6.34,\"furkan\":51.51}"
 
     timeout       = 3  # default timeout for function and methods on this library.
     MAX_ATTEMPT_TIME = 2
@@ -88,10 +88,13 @@ class BG96:
     LTE_CATNB1_ANY = "A0E189F"   #default
     LTE_NO_CHANGE  = "0"
 
-
     # Special Characters
     CTRL_Z         = '\x1A'
 
+
+#=========================================================================================
+#                                 BG96 Config
+#=========================================================================================
     """
     # Date   : 06/08/2023
     # Author : Fatih Furkan
@@ -266,19 +269,6 @@ class BG96:
     def saveConfigurations(self):
         self.sendATComm("AT&W", "OK\r\n")
 
-
-
-
-
-
-
-
-
-
-
-
-#**********************---------------********************--------------------
-
     """
     # Date   : 06/08/2023
     # Author : Fatih Furkan
@@ -287,19 +277,35 @@ class BG96:
     def getIMEI(self):
         return self.sendATComm("AT+CGSN", "OK\r\n")  # Identical command: AT+GSN
 
-    # Function for getting firmware info
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Firmware info
+    """
     def getFirmwareInfo(self):
         return self.sendATComm("AT+CGMR", "OK\r\n")  # Identical command: AT+GMR
 
-    # Function for getting hardware info
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Hardware info
+    """
     def getHardwareInfo(self):
         return self.sendATComm("AT+CGMM", "OK\r\n")  # Identical command: AT+GMM
 
-    # Function returning Manufacturer Identification
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Returning Manufacturer Identification
+    """
     def getManufacturerInfo(self):
         return self.sendATComm("AT+CGMI", "OK\r\n")  # Identical command: AT+GMI
 
-    # Function for setting GSM Band
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Setting GSM Band
+    """
     def setGSMBand(self, gsm_band):
         self.compose = "AT+QCFG=\"band\","
         self.compose += str(gsm_band)
@@ -311,7 +317,11 @@ class BG96:
         self.sendATComm(self.compose, "OK\r\n")
         self.clear_compose()
 
-    # Function for setting Cat.M1 Band
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Setting Cat.M1 Band
+    """
     def setCATM1Band(self, catm1_band):
         self.compose = "AT+QCFG=\"band\","
         self.compose += str(self.GSM_NO_CHANGE)
@@ -323,7 +333,11 @@ class BG96:
         self.sendATComm(self.compose, "OK\r\n")
         self.clear_compose()
 
-    # Function for setting NB-IoT Band
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Setting NB-IoT Band
+    """
     def setNBIoTBand(self, nbiot_band):
         self.compose = "AT+QCFG=\"band\","
         self.compose += str(self.GSM_NO_CHANGE)
@@ -335,12 +349,19 @@ class BG96:
         self.sendATComm(self.compose, "OK\r\n")
         self.clear_compose()
 
-    # Function for getting current band settings
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Get current band settings
+    """
     def getBandConfiguration(self):
         return self.sendATComm("AT+QCFG=\"band\"", "OK\r\n")
 
-
-    # Function for setting running mode.
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Setting running mode.
+    """
     def setMode(self, mode):
         if (mode == self.AUTO_MODE):
             self.sendATComm("AT+QCFG=\"nwscanseq\",00,1", "OK\r\n")
@@ -364,63 +385,122 @@ class BG96:
             self.sendATComm("AT+QCFG=\"iotopmode\",1,1", "OK\r\n")
             print("Modem configuration : CATNB1_MODE ( NB-IoT )")
 
-    # Function for getting self.ip_address
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Get self.ip_address for TCP or UDP
+    """
     def getIPAddress(self):
         return self.ip_address
 
-    # Function for setting self.ip_address
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Set self.ip_address for TCP or UDP
+    """
     def setIPAddress(self, ip):
         self.ip_address = ip
 
-    # Function for getting timout in ms
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Get timout in ms
+    """
     def getTimeout(self):
         return self.timeout
 
-    # Function for setting timeout in ms
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Set timeout in ms
+    """
     def setTimeout(self, new_timeout):
         self.timeout = new_timeout
 
 
 
-    # *** SIM Related Functions ************************************************************
+#=============================================
+#           SIM Related Functions
+#=============================================
 
-    # Function returns Mobile Subscriber Identity(IMSI)
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # returns Mobile Subscriber Identity(IMSI)
+    """
     def getIMSI(self):
         return self.sendATComm("AT+CIMI", "OK\r\n")
 
-    # Functions returns Integrated Circuit Card Identifier(ICCID) number of the SIM
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # returns Integrated Circuit Card Identifier(ICCID) number of the SIM
+    """
     def getICCID(self):
         return self.sendATComm("AT+QCCID", "OK\r\n")
 
-    # ******************************************************************************************
-    # *** Network Service Functions ************************************************************
-    # ******************************************************************************************
 
-    # Fuction for getting signal quality
+#=============================================
+#          Network Service
+#=============================================
+
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Get signal quality
+    """
     def getSignalQuality(self):
         return self.sendATComm("AT+CSQ", "OK\r\n")
 
-    # Function for getting network information
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Get network information
+    """
     def getQueryNetworkInfo(self):
         return self.sendATComm("AT+QNWINFO", "OK\r\n")
 
-    # Function for connecting to base station of operator
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Connecting to base station of operator
+    """
     def connectToOperator(self):
         print("Trying to connect base station of operator...")
+        self.sendATComm("AT+CGATT=1", "")
+        time.sleep(3)
         self.sendATComm("AT+CGATT?", "+CGATT: 1\r\n")
         self.getSignalQuality()
 
-    # Fuction to check the Network Registration Status
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Get Network Registration Status
+    """
     def getNetworkRegStatus(self):
         return self.sendATComm("AT+CREG?", "OK\r\n")
 
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Set Network Registration Status
+    """
     def setNetworkRegStatus(self):
         return self.sendATComm("AT+CREG=1", "OK\r\n")
 
-    # Function to check the Operator
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Get Operator
+    """
     def getOperator(self):
         return self.sendATComm("AT+COPS?", "OK\r\n")
 
+    """
+    # Date   : 06/08/2023
+    # Author : Fatih Furkan
+    # Set Operator APN
+    """
     def setAPN(self, APN):
         print("Connect to Internet...")
         if APN is None:
@@ -434,15 +514,24 @@ class BG96:
         self.sendATComm("AT+CEREG?", "+CEREG")
         self.sendATComm("AT+CGREG?", "+CGREG")
 
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Get Operator APN
+    """
     def getAPN_IPaddress(self):
         self.sendATComm("AT+CGPADDR", "+CGPADDR")
 
 
-    # ******************************************************************************************
-    # *** SMS Functions ************************************************************************
-    # ******************************************************************************************
+#=============================================
+#          SMS Functions
+#=============================================
 
-    # Function for sending SMS
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Sending SMS
+    """
     def sendSMS(self, number, text):
         self.sendATComm("AT+CMGF=1", "OK\r\n")  # text mode
         time.sleep(0.5)
@@ -458,19 +547,31 @@ class BG96:
         self.sendATCommOnce(text)
         self.sendATComm(self.CTRL_Z, "OK", 8)  # with 8 seconds timeout
 
-    # ******************************************************************************************
-    # *** GNSS Functions ***********************************************************************
-    # ******************************************************************************************
+#=============================================
+#          GNSS Functions
+#=============================================
 
-    # Function for turning on GNSS
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Turning on GNSS
+    """
     def turnOnGNSS(self):
         self.sendATComm("AT+QGPS=1", "OK\r\n")
 
-    # Function for turning of GNSS
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Turning off GNSS
+    """
     def turnOffGNSS(self):
         self.sendATComm("AT+QGPSEND", "OK\r\n")
 
-    # Function for getting latitude
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Getting latitude
+    """
     def getLatitude(self):
         self.sendATComm("ATE0", "OK\r\n")
         self.sendATCommOnce("AT+QGPSLOC=2")
@@ -488,7 +589,11 @@ class BG96:
                     ser.close()  #TODO burada neden serial port kapatiliyor
                     return 0
 
-    # Function for getting longitude
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Getting longitude
+    """
     def getLongitude(self):
         self.sendATComm("ATE0", "OK\r\n")
         self.sendATCommOnce("AT+QGPSLOC=2")
@@ -506,7 +611,11 @@ class BG96:
                     ser.close()  #TODO burada neden serial port kapatiliyor
                     return 0
 
-    # Function for getting speed in MPH
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Getting speed in MPH
+    """
     def getSpeedMph(self):
         self.sendATComm("ATE0", "OK\r\n")
         self.sendATCommOnce("AT+QGPSLOC=2")
@@ -524,7 +633,11 @@ class BG96:
                     ser.close()  #TODO burada neden serial port kapatiliyor
                     return 0
 
-    # Function for getting speed in KPH
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Getting speed in KPH
+    """
     def getSpeedKph(self):
         self.sendATComm("ATE0", "OK\r\n")
         self.sendATCommOnce("AT+QGPSLOC=2")
@@ -542,26 +655,43 @@ class BG96:
                     ser.close()  #TODO burada neden serial port kapatiliyor
                     return 0
 
-    # Function for getting fixed location
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Getting fixed location
+    """
     def getFixedLocation(self):
         return self.sendATComm("AT+QGPSLOC?", "+QGPSLOC:")
 
-    # ******************************************************************************************
-    # *** TCP & UDP Protocols Functions ********************************************************
-    # ******************************************************************************************
 
-    # Function for configurating and activating TCP context
+#=============================================
+#      TCP & UDP Protocols Functions
+#=============================================
+
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Configurating and activating TCP context
+    """
     def activateContext(self):
         self.sendATComm("AT+QICSGP=1", "OK\r\n")
         time.sleep(1)
         self.sendATComm("AT+QIACT=1", "\r\n")
 
-    # Function for deactivating TCP context
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Deactivating TCP context
+    """
     def deactivateContext(self):
         self.sendATComm("AT+QIDEACT=1", "\r\n")
 
-    # Function for connecting to server via TCP
-    # just buffer access mode is supported for now.
+
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Connecting to server via TCP
+    """
     def connectToServerTCP(self):
         self.compose = "AT+QIOPEN=1,1"
         self.compose += ",\"TCP\",\""
@@ -573,8 +703,11 @@ class BG96:
         self.clear_compose()
         self.sendATComm("AT+QISTATE=0,1", "OK\r\n")
 
-    # Fuction for sending data via tcp.
-    # just buffer access mode is supported for now.
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Sending data via tcp.
+    """
     def sendDataTCP(self, data):
         self.compose = "AT+QISEND=1,"
         self.compose += str(len(data))
@@ -582,7 +715,11 @@ class BG96:
         self.sendATComm(data, "SEND OK")
         self.clear_compose()
 
-    # Function for sending data to Sixfab connect
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Sending data HTTP
+    """
     def sendDataHTTPConnect(self, server, token, data): # TODO bu fonksiyon daha sonra duzeltilecek
         self.compose = "AT+QHTTPCFG=\"contextid\",1"
         self.sendATComm(self.compose, "OK")
@@ -611,7 +748,11 @@ class BG96:
         self.clear_compose()
         self.sendDataComm(payload, "OK")
 
-    # Function for connecting to server via UDP
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Connecting to server via UDP
+    """
     def startUDPService(self):
         port = "3005"
         self.compose = "AT+QIOPEN=1,1,\"UDP SERVICE\",\""
@@ -623,7 +764,11 @@ class BG96:
         self.clear_compose()
         self.sendATComm("AT+QISTATE=0,1", "\r\n")
 
-    # Fuction for sending data via udp.
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Sending data via udp.
+    """
     def sendDataUDP(self, data):
         self.compose = "AT+QISEND=1,"
         self.compose += str(len(data))
@@ -635,10 +780,42 @@ class BG96:
         self.clear_compose()
         self.sendATComm(data, "SEND OK")
 
-    # Function for closing server connection
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Closing server connection
+    """
     def closeConnection(self):
         self.sendATComm("AT+QICLOSE=1", "\r\n")
 
+
+#=============================================
+#                 INIT
+#=============================================
+
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Init BG96 Module Basic
+    """
+    def InitiliazeTroyalabShield(self):
+        self.setupGPIO()
+        self.powerUp()
+        self.sendATComm("ATE1", "OK\r\n")
+        self.getIMEI()
+        self.getFirmwareInfo()
+        self.getHardwareInfo()
+        self.connectToOperator()
+        self.getSignalQuality()
+        self.getQueryNetworkInfo()
+        self.setNetworkRegStatus()
+
+
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Connecting MQTT broker
+    """
     def ConnectMQTTServer(self, MQTT_BROKER_IP = None, MQTT_PORT = None):
         if MQTT_BROKER_IP is None:
             MQTT_BROKER_IP = self.MQTT_BROKER_IP
@@ -650,6 +827,11 @@ class BG96:
         self.compose += MQTT_PORT
         self.sendATComm(self.compose, "+QMTOPEN")
 
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Configure MQTT Device
+    """
     def MQTTDeviceConf(self, MQTT_CLIENT_ID = "Troyalab", MQTT_USER_NAME = "Troyalab"  , MQTT_PASSWORD = None):
         if MQTT_CLIENT_ID is None:
             MQTT_CLIENT_ID = self.MQTT_CLIENT_ID
@@ -664,7 +846,12 @@ class BG96:
         self.compose += "\"" + MQTT_PASSWORD + "\""
         self.sendATComm(self.compose, "+QMTCONN")
 
-    def sendDataMQTT(self, MQTT_TOPIC = "v1/devices/me/telemetry" ,JSON_DATA="{\"fatih\":6.34,\"furkan\":51.51}"):
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Publish data MQTT
+    """
+    def publishDataMQTT(self, MQTT_TOPIC = "v1/devices/me/telemetry" ,JSON_DATA="{\"fatih\":6.34,\"furkan\":51.51}"):
         if MQTT_TOPIC is None:
             MQTT_TOPIC = self.MQTT_TOPIC
         if JSON_DATA is None:
@@ -677,82 +864,53 @@ class BG96:
         self.sendATComm(self.compose,"{")
         command_variable = chr(26)
         ser.write(command_variable.encode('utf-8'))
-        self.getResponse("OK")
-    def sendCTRL_Z(self):
-        command_variable = chr(26)
-        ser.write(command_variable.encode('utf-8'))
-
-    def data_send_deneme(self, command):
-        if (ser.isOpen() == False):
-            ser.open()
-        compose = ""
-        # compose = str(command) + "\r\n"
-        ser.reset_input_buffer()
-        ser.write(command.encode())
-        time.sleep(5)
-        response = ser.read_all().decode()
-        time.sleep(1)
-        print(response)
-
-    def sendDataMQTT_all(self, server, token, data): # TODO bu fonksiyon daha sonra duzeltilecek
-        self.compose = "AT+QHTTPCFG=\"contextid\",1"
-        self.sendATComm(self.compose, "OK")
-        self.clear_compose()
-        self.compose = "AT+QHTTPCFG=\"requestheader\",1"
-        self.sendATComm(self.compose, "OK")
-        self.clear_compose()
-        url = str("https://" + server + "/ ----- /")
-        self.compose = "AT+QHTTPURL="
-        self.compose += str(len(url))
-        self.compose += ",80"
-        self.setTimeout(20)
-        self.sendATComm(self.compose, "CONNECT")
-        self.clear_compose()
-        self.sendDataComm(url, "OK")
-        payload = "POST /----/ HTTP/1.1\r\nHost: " + server + "\r\nx-api-key: " + token + "\r\nContent-Type: application/json\r\nContent-Length: " + str(
-            len(data)) + "\r\n\r\n"
-        payload += data
-        print("POSTED DATA")
-        print(payload)
-        print("----------------")
-        self.compose = "AT+QHTTPPOST="
-        self.compose += str(len(payload))
-        self.compose += ",60,60"
-        self.sendATComm(self.compose, "CONNECT")
-        self.clear_compose()
-        self.sendDataComm(payload, "OK")
+        time.sleep(2)
+        #self.getResponse("OK")
 
 
+    """
+    # Date   : 11/08/2023
+    # Author : Fatih Furkan
+    # Basic configure Thignsboard MQTT broker
+    """
+    def ThingboardMQTTBasicConfig(self,MQTT_BROKER_IP = None, MQTT_PORT = None, MQTT_CLIENT_ID = None, MQTT_USER_NAME =None  , MQTT_PASSWORD = None ): # TODO bu fonksiyon daha sonra duzeltilecek
 
-
-
-##-------------------
-###OLD
-    def AT_komut_gonder(self, command_user, print_response = False):
-        is_OK = False
-        try:
-            if (ser.isOpen() == False):
-                ser.open()
-        except AttributeError:
-            print("Serial port could not be opened")
-            #return
-            quit() #burayı tekrar dusunelim, uygulamadan mı cikmali yoksa return ile fonksiyondan mı cikmali
-        compose = ''
-        compose = str(command_user) + "\r\n"
-        ser.reset_input_buffer()
-        ser.write(compose.encode())
-        time.sleep(.300)
-        response = ser.read_all()
-        size = len(response)
-
-        if ((response[size-1] == 10) and (response[size-2] == 13) and (response[size-3] == 75) and (response[size-4] == 79)):
-            is_OK = True
-            print("BG96's answer is OK.")
+        if MQTT_BROKER_IP is None or MQTT_PORT is None:
+            print("Broker veya port yanlis")
         else:
-            print("BG96's answer is not OK.")
+            self.TB_MQTT_BROKER_IP = MQTT_BROKER_IP
+            self.TB_MQTT_PORT = MQTT_PORT
+            self.ConnectMQTTServer(MQTT_BROKER_IP, MQTT_PORT)
+        time.sleep(1)
+        if MQTT_CLIENT_ID is None or MQTT_USER_NAME is None or MQTT_PASSWORD is None:
+            print("MQTT_CLIENT_ID,  MQTT_USER_NAME veya MQTT_PASSWORD yanlis")
+        else:
+            self.TB_MQTT_CLIENT_ID = MQTT_CLIENT_ID
+            self.TB_MQTT_USER_NAME = MQTT_USER_NAME
+            self.TB_MQTT_PASSWORD = MQTT_PASSWORD
+            self.MQTTDeviceConf(MQTT_CLIENT_ID,MQTT_USER_NAME,MQTT_PASSWORD)
 
-        if(print_response == True):
-            print("BG96 Response : ", end="")
-            print(response.decode("utf-8"))
+    """
+    # Date   : 10/08/2023
+    # Author : Fatih Furkan
+    # TB'a veriyi mqtt basic formatinda gonderir
+    """
+    def ThingboardMQTT_TokenConfig(self,MQTT_BROKER_IP = None, MQTT_PORT = None,  MQTT_USER_NAME =None  , MQTT_PASSWORD = None ): # TODO bu fonksiyon daha sonra duzeltilecek
 
-        return is_OK
+        if MQTT_BROKER_IP is None or MQTT_PORT is None:
+            print("Broker veya port yanlis")
+        else:
+            self.TB_MQTT_BROKER_IP = MQTT_BROKER_IP
+            self.TB_MQTT_PORT = MQTT_PORT
+            self.ConnectMQTTServer(MQTT_BROKER_IP, MQTT_PORT)
+        time.sleep(1)
+        if MQTT_USER_NAME is None or MQTT_PASSWORD is None:
+            print("MQTT_CLIENT_ID,  MQTT_USER_NAME veya MQTT_PASSWORD yanlis")
+        else:
+            self.TB_MQTT_USER_NAME = MQTT_USER_NAME
+            self.TB_MQTT_PASSWORD = MQTT_PASSWORD
+            self.MQTTDeviceConf(MQTT_USER_NAME,MQTT_PASSWORD)
+
+
+
+

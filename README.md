@@ -48,7 +48,7 @@ troyalab.getHardwareInfo()
 
 ### Verison Descriptions
 
-| Version | 0.1.3        |
+| Version | 0.1.6        |
 | ------- |--------------|
 | Author  | Fatih Furkan |
 | Date    | 13.08.2023   |

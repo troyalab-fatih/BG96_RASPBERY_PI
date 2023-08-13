@@ -865,7 +865,6 @@ class BG96:
         command_variable = chr(26)
         ser.write(command_variable.encode('utf-8'))
         time.sleep(2)
-        #self.getResponse("OK")
 
 
     """
@@ -893,7 +892,7 @@ class BG96:
     """
     # Date   : 10/08/2023
     # Author : Fatih Furkan
-    # TB'a veriyi mqtt basic formatinda gonderir
+    # TB'a veriyi mqtt token formatinda gonderir
     """
     def ThingboardMQTT_TokenConfig(self,MQTT_BROKER_IP = None, MQTT_PORT = None,  MQTT_USER_NAME =None  , MQTT_PASSWORD = None ): # TODO bu fonksiyon daha sonra duzeltilecek
 

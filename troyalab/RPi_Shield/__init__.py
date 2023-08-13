@@ -13,7 +13,7 @@ except Exception as e:
 try:
     from decimal import *
 except Exception as e:
-    print("serial Library not found.")
+    print("decimal Library not found.")
 ser = serial.Serial()
 
 #===========================================================================================================#
@@ -586,7 +586,7 @@ class BG96:
                     return Decimal(self.response[1])
                 if (self.response.find("\r\n") != -1 and self.response.find("ERROR") != -1):
                     print(self.response)
-                    ser.close()  #TODO burada neden serial port kapatiliyor
+                    ser.close()  #TODO burada serial port kapatiliyor
                     return 0
 
     """
@@ -608,7 +608,7 @@ class BG96:
                     return Decimal(self.response[2])
                 if (self.response.find("\r\n") != -1 and self.response.find("ERROR") != -1):
                     print(self.response)
-                    ser.close()  #TODO burada neden serial port kapatiliyor
+                    ser.close()  #TODO burada serial port kapatiliyor
                     return 0
 
     """

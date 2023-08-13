@@ -53,8 +53,16 @@ troyalab.MQTTDeviceConf("raspi","raspi","raspi")
 sleep(1)  # Sleep for 1 second
 """
 
-troyalab.ThingboardMQTTBasicConfig("3.144.39.189","1883","raspi","raspi","raspi")
+troyalab.turnOnGNSS()
+sleep(5)
+Latitude  = troyalab.getLatitude()
+sleep(1)
+Longitude = troyalab.getLongitude()
+sleep(1)
+troyalab.turnOffGNSS()
+sleep(1)
 
+troyalab.ThingboardMQTTBasicConfig("3.144.39.189","1883","raspi","raspi","raspi")
 while True:
     sleep(8)
     troyalab.publishDataMQTT("v1/devices/me/telemetry", "{\"fatih\":6,\"furkan\":34}")

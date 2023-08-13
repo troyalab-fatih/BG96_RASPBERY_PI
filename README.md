@@ -7,7 +7,7 @@ The easiest way to install troyalab is to download it from [`PyPI`](https://pypi
 $ pip install troyalab
 ```
 
-Secondly, you can install deepface from its source code.
+Secondly, you can install troyalab from its source code.
 
 ```shell
 $ git clone https://github.com/troyalab-fatih/BG96_RASPBERY_PI
@@ -48,11 +48,11 @@ troyalab.getHardwareInfo()
 
 ### Verison Descriptions
 
-| Version | 0.0.2        |
+| Version | 0.1.3        |
 | ------- |--------------|
 | Author  | Fatih Furkan |
 | Date    | 13.08.2023   |
 | Raspi   | 4 - Model B  |
 | Python  | 3.9.2        |
 #### Verison Descriptions
-- Added GNSS. 
+- Git and PyPI pulled to the same version. 

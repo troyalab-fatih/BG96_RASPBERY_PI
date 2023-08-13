@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="troyalab",
-    version="0.0.2",
+    version="0.1.5",
     author="Fatih Furkan",
     author_email="furkan.troyalab@outlook.com",
     description="A library to use for Troyalab development boards for Python",
